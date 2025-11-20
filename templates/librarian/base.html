@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" style="width: 250px;">
+        <div class="p-3">
+            <!-- Logo -->
+            <div class="text-center text-white mb-4 py-3">
+                <i class="bi bi-book" style="font-size: 3rem;"></i>
+                <h5 class="mt-2 mb-0">Perpustakaan</h5>
+                <small>Dashboard Librarian</small>
+            </div>
+            
+            <!-- User Info -->
+            <div class="text-white text-center mb-4 pb-3 border-bottom border-white border-opacity-25">
+                <div class="bg-white bg-opacity-25 rounded-circle d-inline-flex p-2 mb-2">
+                    <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                </div>
+                <div>
+                    <strong>{{ user.username }}</strong><br>
+                    <small>{{ user.get_role_display }}</small>
+                </div>
+            </div>
+            <!-- Navigation Menu -->
+            <nav class="nav flex-column">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                   href="{% url 'librarian:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                
+                <div class="text-white text-opacity-50 small px-3 mt-3 mb-2">TRANSAKSI</div>
+                <a class="nav-link {% if request.resolver_match.url_name == 'scan_borrow' %}active{% endif %}" 
+                   href="{% url 'librarian:scan_borrow' %}">
+                    <i class="bi bi-upc-scan"></i> Scan Peminjaman
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'scan_return' %}active{% endif %}" 
+                   href="{% url 'librarian:scan_return' %}">
+                    <i class="bi bi-arrow-return-left"></i> Scan Pengembalian
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'active_loans' %}active{% endif %}" 
+                   href="{% url 'librarian:active_loans' %}">
+                    <i class="bi bi-list-check"></i> Peminjaman Aktif
+                </a>
+                
+                <div class="text-white text-opacity-50 small px-3 mt-3 mb-2">MANAJEMEN</div>
+                <a class="nav-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}" 
+                   href="{% url 'librarian:members_list' %}">
+                    <i class="bi bi-people"></i> Anggota
+                </a>
+                <a class="nav-link {% if 'book' in request.resolver_match.url_name %}active{% endif %}" 
+                   href="{% url 'librarian:books_list' %}">
+                    <i class="bi bi-book"></i> Buku
+                </a>
+                
+                <div class="text-white text-opacity-50 small px-3 mt-3 mb-2">LAPORAN</div>
+                <a class="nav-link {% if 'reports' in request.path %}active{% endif %}" 
+                   href="{% url 'reports:dashboard' %}">
+                    <i class="bi bi-file-earmark-text"></i> Laporan
+                </a>
+                
+                <div class="text-white text-opacity-50 small px-3 mt-3 mb-2">LAINNYA</div>
+                
+                <div class="text-white text-opacity-50 small px-3 mt-3 mb-2">LAINNYA</div>
+                <a class="nav-link" href="{% url 'books:catalog' %}" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Katalog Publik
+                </a>
+                <a class="nav-link" href="{% url 'users:logout' %}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-grow-1" style="min-height: 100vh; background-color: #f8f9fa;">
+        <!-- Top Bar -->
+        <div class="bg-white border-bottom p-3 sticky-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+                <div>
+                    <span class="text-muted me-3">
+                        <i class="bi bi-calendar"></i> 
+                        <span id="current-date"></span>
+                    </span>
+                    <span class="text-muted">
+                        <i class="bi bi-clock"></i> 
+                        <span id="current-time"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messages -->
+        {% if messages %}
+        <div class="p-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Page Content -->
+        <div class="p-4">
+            {% block librarian_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Clock Script -->
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        
+        // Format tanggal
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateStr = now.toLocaleDateString('id-ID', options);
+        document.getElementById('current-date').textContent = dateStr;
+        
+        // Format waktu
+        const timeStr = now.toLocaleTimeString('id-ID');
+        document.getElementById('current-time').textContent = timeStr;
+    }
+    
+    // Update setiap detik
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+</script>
+{% endblock %}

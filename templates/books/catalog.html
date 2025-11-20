@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Katalog Buku - Perpustakaan Sekolah{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="bi bi-book text-primary"></i> 
+            <span class="d-none d-sm-inline">Perpustakaan Sekolah</span>
+            <span class="d-inline d-sm-none">Perpus</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="bi bi-house d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Home</span>
+                        <span class="d-lg-none">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'books:catalog' %}">
+                        <i class="bi bi-book-half d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Katalog Buku</span>
+                        <span class="d-lg-none">Katalog</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'librarian:dashboard' %}">
+                        <i class="bi bi-speedometer2 d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Dashboard</span>
+                        <span class="d-lg-none">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Logout</span>
+                        <span class="d-lg-none">Logout</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="btn btn-gradient btn-sm" href="{% url 'users:login' %}">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-6 display-md-5 fw-bold mb-2 mb-md-0">
+            <i class="bi bi-book-half"></i> Katalog Buku
+        </h1>
+        <p class="lead mb-0 d-none d-md-block">Jelajahi koleksi buku perpustakaan kami</p>
+        <p class="mb-0 d-md-none">Jelajahi koleksi buku kami</p>
+    </div>
+</div>
+
+<!-- Search & Filter -->
+<div class="container mb-4">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
+            <form method="get" class="row g-2 g-md-3">
+                <div class="col-12 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Cari judul, penulis, ISBN..." 
+                               value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-8 col-md-4">
+                    <select class="form-select" name="category">
+                        <option value="">Semua Kategori</option>
+                        {% for value, label in categories %}
+                        <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-4 col-md-2">
+                    <button type="submit" class="btn btn-gradient w-100">
+                        <i class="bi bi-funnel"></i>
+                        <span class="d-none d-sm-inline"> Filter</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Books Grid -->
+<div class="container mb-5">
+    {% if books %}
+    <div class="row g-3 g-md-4">
+        {% for book in books %}
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
+            <div class="card h-100 shadow-sm hover-lift">
+                <!-- Cover Image -->
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top book-cover" alt="{{ book.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top book-cover bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
+                </div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column p-2 p-md-3">
+                    <!-- Title -->
+                    <h6 class="card-title fw-bold mb-2 small">{{ book.title|truncatewords:5 }}</h6>
+                    
+                    <!-- Author -->
+                    <p class="card-text text-muted small mb-2 d-none d-md-block">
+                        <i class="bi bi-person"></i> {{ book.author }}
+                    </p>
+                    
+                    <!-- Category -->
+                    <p class="mb-2">
+                        <span class="badge bg-primary small">{{ book.get_category_display }}</span>
+                    </p>
+                    
+                    <!-- Rating -->
+                    <div class="rating-stars mb-2 small">
+                        {% with stars=book.get_rating_stars %}
+                        {% for i in "x"|rjust:stars.full %}
+                        <i class="bi bi-star-fill"></i>
+                        {% endfor %}
+                        {% if stars.half %}
+                        <i class="bi bi-star-half"></i>
+                        {% endif %}
+                        {% for i in "x"|rjust:stars.empty %}
+                        <i class="bi bi-star"></i>
+                        {% endfor %}
+                        {% endwith %}
+                        <small class="text-muted d-none d-md-inline">({{ book.rating }})</small>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="mb-2 mb-md-3">
+                        {% if book.is_available %}
+                        <span class="badge bg-success small">
+                            <i class="bi bi-check-circle"></i> 
+                            <span class="d-none d-md-inline">Tersedia</span>
+                            ({{ book.get_available_copies_count }})
+                        </span>
+                        {% else %}
+                        <span class="badge bg-danger small">
+                            <i class="bi bi-x-circle"></i> 
+                            <span class="d-none d-md-inline">Tidak Tersedia</span>
+                            <span class="d-md-none">Habis</span>
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Button -->
+                    <a href="{% url 'books:detail' book.pk %}" class="btn btn-outline-primary btn-sm mt-auto w-100">
+                        <i class="bi bi-eye"></i> 
+                        <span class="d-none d-sm-inline">Lihat</span> Detail
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+        <h4 class="mt-3 h5 h-md-4">Tidak ada buku ditemukan</h4>
+        <p class="text-muted small">Coba ubah kata kunci pencarian atau filter Anda</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-3 py-md-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0 small">&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+    </div>
+</footer>
+
+<style>
+    /* Hover effect untuk card */
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Responsive font sizes */
+    @media (max-width: 576px) {
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 0.875rem;
+        }
+        
+        .rating-stars i {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Better touch targets for mobile */
+    @media (max-width: 768px) {
+        .btn {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .nav-link {
+            padding: 0.75rem 1rem;
+        }
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} - Perpustakaan Sekolah{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="bi bi-book text-primary"></i> Perpustakaan Sekolah
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'books:catalog' %}">Katalog Buku</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'librarian:dashboard' %}">Dashboard</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Book Detail -->
+<div class="container my-5">
+    <div class="row">
+        <!-- Cover Image -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 500px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 500px;">
+                    <i class="bi bi-book text-muted" style="font-size: 10rem;"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Book Info -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Title -->
+                    <h2 class="fw-bold mb-3">{{ book.title }}</h2>
+                    
+                    <!-- Rating -->
+                    <div class="rating-stars mb-3" style="font-size: 1.5rem;">
+                        {% with stars=book.get_rating_stars %}
+                        {% for i in "x"|rjust:stars.full %}
+                        <i class="bi bi-star-fill"></i>
+                        {% endfor %}
+                        {% if stars.half %}
+                        <i class="bi bi-star-half"></i>
+                        {% endif %}
+                        {% for i in "x"|rjust:stars.empty %}
+                        <i class="bi bi-star"></i>
+                        {% endfor %}
+                        {% endwith %}
+                        <span class="text-muted">({{ book.rating }})</span>
+                    </div>
+                    
+                    <!-- Details -->
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="150"><i class="bi bi-person"></i> Penulis:</th>
+                            <td>{{ book.author }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-building"></i> Penerbit:</th>
+                            <td>{{ book.publisher }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-calendar"></i> Tahun Terbit:</th>
+                            <td>{{ book.year_published }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-upc"></i> ISBN:</th>
+                            <td>{{ book.isbn }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-tag"></i> Kategori:</th>
+                            <td><span class="badge bg-primary">{{ book.get_category_display }}</span></td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-stack"></i> Total Salinan:</th>
+                            <td>{{ book.total_copies }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-check-circle"></i> Tersedia:</th>
+                            <td>
+                                {% if book.is_available %}
+                                <span class="badge bg-success">{{ book.get_available_copies_count }} salinan</span>
+                                {% else %}
+                                <span class="badge bg-danger">Tidak tersedia</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <!-- Description -->
+                    {% if book.description %}
+                    <div class="mt-4">
+                        <h5 class="fw-bold">Deskripsi:</h5>
+                        <p class="text-muted">{{ book.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Back Button -->
+                    <div class="mt-4">
+                        <a href="{% url 'books:catalog' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Katalog
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Book Copies -->
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Daftar Salinan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>No. Salinan</th>
+                                    <th>Barcode</th>
+                                    <th>Kondisi</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for copy in book_copies %}
+                                <tr>
+                                    <td>#{{ copy.copy_number }}</td>
+                                    <td><code>{{ copy.barcode }}</code></td>
+                                    <td>
+                                        {% if copy.condition == 'baik' %}
+                                        <span class="badge bg-success">Baik</span>
+                                        {% elif copy.condition == 'rusak_ringan' %}
+                                        <span class="badge bg-warning">Rusak Ringan</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Rusak Berat</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if copy.is_available %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Tersedia
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> Dipinjam
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}

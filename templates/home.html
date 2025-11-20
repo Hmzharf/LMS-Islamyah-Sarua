@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Perpustakaan Sekolah{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="bi bi-book text-primary"></i>
+            <span class="gradient-text d-none d-sm-inline">Perpustakaan Sekolah</span>
+            <span class="gradient-text d-inline d-sm-none">Perpus</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'home' %}">
+                        <i class="bi bi-house d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Home</span>
+                        <span class="d-lg-none">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'books:catalog' %}">
+                        <i class="bi bi-book-half d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Katalog Buku</span>
+                        <span class="d-lg-none">Katalog</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'librarian:dashboard' %}">
+                        <i class="bi bi-speedometer2 d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Dashboard</span>
+                        <span class="d-lg-none">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right d-lg-none"></i>
+                        <span class="d-none d-lg-inline">Logout</span>
+                        <span class="d-lg-none">Logout</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="btn btn-gradient btn-sm" href="{% url 'users:login' %}">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="gradient-bg text-white py-4 py-md-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="display-5 display-md-4 fw-bold mb-3 mb-md-4">
+                    Selamat Datang di Perpustakaan Sekolah
+                </h1>
+                <p class="lead mb-3 mb-md-4 fs-6 fs-md-5">
+                    Temukan ribuan koleksi buku untuk menambah wawasan dan pengetahuan Anda.
+                    Sistem perpustakaan modern dengan teknologi barcode scanning.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+                    <a href="{% url 'books:catalog' %}" class="btn btn-light btn-lg w-100 w-sm-auto">
+                        <i class="bi bi-search"></i> Jelajahi Katalog
+                    </a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-light btn-lg w-100 w-sm-auto">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center d-none d-lg-block">
+                <i class="bi bi-book hero-icon"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-4 py-md-5">
+    <div class="container">
+        <h2 class="text-center mb-4 mb-md-5 h3 h-md-2">Fitur Unggulan</h2>
+        <div class="row g-3 g-md-4">
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card text-center h-100 shadow-sm hover-lift">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="mb-3">
+                            <i class="bi bi-upc-scan text-primary feature-icon"></i>
+                        </div>
+                        <h5 class="card-title h6 h-md-5">Barcode Scanning</h5>
+                        <p class="card-text small">
+                            Peminjaman dan pengembalian buku dengan scan barcode yang cepat dan akurat.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card text-center h-100 shadow-sm hover-lift">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="mb-3">
+                            <i class="bi bi-search text-primary feature-icon"></i>
+                        </div>
+                        <h5 class="card-title h6 h-md-5">Pencarian Mudah</h5>
+                        <p class="card-text small">
+                            Cari buku berdasarkan judul, penulis, ISBN, atau kategori dengan mudah.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="card text-center h-100 shadow-sm hover-lift">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="mb-3">
+                            <i class="bi bi-clock-history text-primary feature-icon"></i>
+                        </div>
+                        <h5 class="card-title h6 h-md-5">Tracking Real-time</h5>
+                        <p class="card-text small">
+                            Pantau status peminjaman, jatuh tempo, dan denda secara real-time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="gradient-bg text-white py-4 py-md-5">
+    <div class="container">
+        <div class="row text-center g-3 g-md-4">
+            <div class="col-4 col-md-4">
+                <h2 class="display-6 display-md-4 fw-bold mb-2">1000+</h2>
+                <p class="lead mb-0 fs-6 fs-md-5">Koleksi Buku</p>
+            </div>
+            <div class="col-4 col-md-4">
+                <h2 class="display-6 display-md-4 fw-bold mb-2">500+</h2>
+                <p class="lead mb-0 fs-6 fs-md-5">Anggota Aktif</p>
+            </div>
+            <div class="col-4 col-md-4">
+                <h2 class="display-6 display-md-4 fw-bold mb-2">5000+</h2>
+                <p class="lead mb-0 fs-6 fs-md-5">Peminjaman</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-3 py-md-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-1 mb-md-0 small">&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+        <p class="mb-0 small">Powered by Django & PostgreSQL</p>
+    </div>
+</footer>
+
+<style>
+    /* Hero Icon Responsive */
+    .hero-icon {
+        font-size: 15rem;
+        opacity: 0.3;
+    }
+    
+    @media (max-width: 991.98px) {
+        .hero-icon {
+            font-size: 8rem;
+        }
+    }
+    
+    /* Feature Icons Responsive */
+    .feature-icon {
+        font-size: 3rem;
+    }
+    
+    @media (max-width: 767.98px) {
+        .feature-icon {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Hover effect untuk feature cards */
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Responsive Typography */
+    @media (max-width: 576px) {
+        .display-5 {
+            font-size: 1.75rem;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem;
+        }
+        
+        .lead {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .display-md-4 {
+            font-size: 3.5rem;
+        }
+    }
+    
+    /* Button Responsive */
+    @media (max-width: 576px) {
+        .btn-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Better touch targets for mobile */
+    @media (max-width: 768px) {
+        .btn {
+            padding: 0.5rem 0.75rem;
+            min-height: 44px;
+        }
+        
+        .nav-link {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    /* Stats Section Responsive */
+    @media (max-width: 576px) {
+        .stats-number {
+            font-size: 2rem;
+        }
+    }
+    
+    /* Card body padding responsive */
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+    
+    /* Gradient text responsive */
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Navbar brand responsive */
+    @media (max-width: 576px) {
+        .navbar-brand {
+            font-size: 1rem;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+{% endblock %}

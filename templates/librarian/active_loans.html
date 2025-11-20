@@ -1,0 +1,111 @@
+{% extends 'librarian/base.html' %}
+{% load loan_filters %}
+
+{% block page_title %}Peminjaman Aktif{% endblock %}
+
+{% block librarian_content %}
+<!-- Search & Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Cari nama anggota, NIS, atau judul buku..." 
+                           value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" name="status">
+                    <option value="">Semua Status</option>
+                    <option value="dipinjam" {% if status_filter == 'dipinjam' %}selected{% endif %}>Dipinjam</option>
+                    <option value="terlambat" {% if status_filter == 'terlambat' %}selected{% endif %}>Terlambat</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-gradient w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Loans Table -->
+<div class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-list-check"></i> Daftar Peminjaman Aktif
+        </h5>
+        <span class="badge bg-primary">{{ loans.count }} peminjaman</span>
+    </div>
+    <div class="card-body">
+        {% if loans %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Anggota</th>
+                        <th>Buku</th>
+                        <th>Barcode</th>
+                        <th>Tgl Pinjam</th>
+                        <th>Jatuh Tempo</th>
+                        <th>Status</th>
+                        <th>Denda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %}
+                    <tr>
+                        <td>
+                            <strong>{{ loan.member.name }}</strong><br>
+                            <small class="text-muted">{{ loan.member.nis }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ loan.book_copy.book.title|truncatewords:5 }}</strong><br>
+                            <small class="text-muted">Copy #{{ loan.book_copy.copy_number }}</small>
+                        </td>
+                        <td><code>{{ loan.book_copy.barcode }}</code></td>
+                        <td>{{ loan.borrowed_date|date:"d M Y" }}</td>
+                        <td>
+                            {{ loan.due_date|date:"d M Y" }}<br>
+                            {% if loan.days_until_due > 0 %}
+                            <small class="text-success">{{ loan.days_until_due }} hari lagi</small>
+                            {% elif loan.days_until_due == 0 %}
+                            <small class="text-warning">Hari ini!</small>
+                            {% else %}
+                            <small class="text-danger">Terlambat {{ loan.days_until_due|abs_value }} hari</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if loan.status == 'dipinjam' %}
+                            <span class="badge bg-primary">Dipinjam</span>
+                            {% else %}
+                            <span class="badge bg-danger">Terlambat</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if loan.fine_amount > 0 %}
+                            <span class="text-danger fw-bold">Rp {{ loan.fine_amount|floatformat:0 }}</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 5rem;"></i>
+            <h5 class="mt-3">Tidak ada peminjaman aktif</h5>
+            <p class="text-muted">Semua buku sudah dikembalikan atau belum ada peminjaman</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

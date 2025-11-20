@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifikasi Keterlambatan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+        .book-info {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #dc3545;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .alert {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .alert h2 {
+            color: #dc3545;
+            margin: 0 0 10px 0;
+        }
+        .fine-box {
+            background: #fff;
+            border: 2px solid #dc3545;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .fine-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 Notifikasi Keterlambatan</h1>
+    </div>
+    
+    <div class="content">
+        <p>Halo <strong>{{ member.name }}</strong>,</p>
+        
+        <div class="alert">
+            <h2>⚠️ Buku Anda Terlambat!</h2>
+            <p>Peminjaman Anda telah melewati batas waktu pengembalian.</p>
+        </div>
+        
+        <div class="book-info">
+            <h3>📖 Detail Peminjaman</h3>
+            
+            <div class="info-row">
+                <span class="label">Judul Buku:</span>
+                <span>{{ loan.book_copy.book.title }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Barcode:</span>
+                <span><code>{{ loan.book_copy.barcode }}</code></span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Tanggal Pinjam:</span>
+                <span>{{ loan.borrowed_date|date:"d F Y" }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Jatuh Tempo:</span>
+                <span><strong style="color: #dc3545;">{{ loan.due_date|date:"d F Y" }}</strong></span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Terlambat:</span>
+                <span><strong style="color: #dc3545;">{{ days_overdue }} hari</strong></span>
+            </div>
+        </div>
+        
+        <div class="fine-box">
+            <p style="margin: 0 0 10px 0;">Total Denda:</p>
+            <div class="fine-amount">Rp {{ fine_amount|floatformat:0 }}</div>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">
+                (Rp 1.000 x {{ days_overdue }} hari)
+            </p>
+        </div>
+        
+        <p><strong>🔴 Tindakan yang Harus Dilakukan:</strong></p>
+        <ul>
+            <li>Segera kembalikan buku ke perpustakaan</li>
+            <li>Bayar denda keterlambatan sebesar <strong>Rp {{ fine_amount|floatformat:0 }}</strong></li>
+            <li>Hubungi perpustakaan jika ada kendala</li>
+        </ul>
+        
+        <p>Terima kasih atas kerjasamanya.</p>
+        
+        <p>Salam,<br>
+        <strong>Tim Perpustakaan</strong></p>
+    </div>
+    
+    <div class="footer">
+        <p>Email ini dikirim otomatis oleh sistem. Mohon tidak membalas email ini.</p>
+        <p>&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+    </div>
+</body>
+</html>

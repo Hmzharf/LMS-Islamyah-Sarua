@@ -1,0 +1,220 @@
+{% extends 'librarian/base.html' %}
+
+{% block page_title %}Detail Anggota{% endblock %}
+
+{% block librarian_content %}
+<!-- Header Actions -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">
+        <i class="bi bi-person-badge"></i> Detail Anggota
+    </h4>
+    <div class="btn-group">
+        <a href="{% url 'librarian:member_edit' member.pk %}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a href="{% url 'librarian:member_print_card' member.pk %}" class="btn btn-success" target="_blank">
+            <i class="bi bi-printer"></i> Print Kartu
+        </a>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <i class="bi bi-trash"></i> Hapus
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Member Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <!-- Avatar -->
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
+                    <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
+                </div>
+                
+                <h4 class="fw-bold">{{ member.name }}</h4>
+                <p class="text-muted mb-3">{{ member.get_member_type_display }}</p>
+                
+                <!-- Status Badge -->
+                {% if member.is_active %}
+                <span class="badge bg-success mb-3">Aktif</span>
+                {% else %}
+                <span class="badge bg-secondary mb-3">Tidak Aktif</span>
+                {% endif %}
+                
+                <!-- Barcode -->
+                {% if member.barcode_image %}
+                <div class="mb-3">
+                    <img src="{{ member.barcode_image.url }}" alt="Barcode" class="img-fluid" style="max-width: 200px;">
+                </div>
+                {% endif %}
+                <p class="mb-0"><code>{{ member.barcode }}</code></p>
+            </div>
+        </div>
+        
+        <!-- Stats Card -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Statistik Peminjaman</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Peminjaman Aktif:</span>
+                    <strong class="text-primary">{{ member.get_active_loans_count }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Total Denda:</span>
+                    <strong class="text-danger">Rp {{ member.get_total_fines|floatformat:0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Status Tunggakan:</span>
+                    {% if member.has_overdue_loans %}
+                    <span class="badge bg-danger">Ada Tunggakan</span>
+                    {% else %}
+                    <span class="badge bg-success">Tidak Ada</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Member Details & History -->
+    <div class="col-md-8">
+        <!-- Personal Info -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informasi Pribadi</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <th width="200">NIS/NIP:</th>
+                        <td><code>{{ member.nis }}</code></td>
+                    </tr>
+                    <tr>
+                        <th>Jenis Kelamin:</th>
+                        <td>
+                            <i class="bi bi-{% if member.gender == 'L' %}gender-male text-primary{% else %}gender-female text-danger{% endif %}"></i>
+                            {{ member.get_gender_display }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Tanggal Lahir:</th>
+                        <td>{{ member.date_of_birth|date:"d F Y" }}</td>
+                    </tr>
+                    {% if member.class_name %}
+                    <tr>
+                        <th>Kelas:</th>
+                        <td>{{ member.class_name }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Telepon:</th>
+                        <td><i class="bi bi-telephone"></i> {{ member.phone }}</td>
+                    </tr>
+                    {% if member.email %}
+                    <tr>
+                        <th>Email:</th>
+                        <td><i class="bi bi-envelope"></i> {{ member.email }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Alamat:</th>
+                        <td>{{ member.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Terdaftar:</th>
+                        <td>{{ member.created_at|date:"d F Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Loan History -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Riwayat Peminjaman (10 Terakhir)</h5>
+            </div>
+            <div class="card-body">
+                {% if loans %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Buku</th>
+                                <th>Tgl Pinjam</th>
+                                <th>Tgl Kembali</th>
+                                <th>Status</th>
+                                <th>Denda</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td>
+                                    <strong>{{ loan.book_copy.book.title|truncatewords:5 }}</strong><br>
+                                    <small class="text-muted">{{ loan.book_copy.barcode }}</small>
+                                </td>
+                                <td>{{ loan.borrowed_date|date:"d M Y" }}</td>
+                                <td>
+                                    {% if loan.return_date %}
+                                    {{ loan.return_date|date:"d M Y" }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if loan.status == 'dipinjam' %}
+                                    <span class="badge bg-primary">Dipinjam</span>
+                                    {% elif loan.status == 'terlambat' %}
+                                    <span class="badge bg-danger">Terlambat</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Dikembalikan</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if loan.fine_amount > 0 %}
+                                    <span class="text-danger">Rp {{ loan.fine_amount|floatformat:0 }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Belum ada riwayat peminjaman</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus anggota <strong>{{ member.name }}</strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Anggota akan dinonaktifkan (soft delete). Data tidak akan hilang permanen.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form method="post" action="{% url 'librarian:member_delete' member.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

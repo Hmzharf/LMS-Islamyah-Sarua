@@ -1,0 +1,123 @@
+{% extends 'librarian/base.html' %}
+
+{% block page_title %}
+    {% if action == 'add' %}Tambah Anggota{% else %}Edit Anggota{% endif %}
+{% endblock %}
+
+{% block librarian_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header gradient-bg text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-{% if action == 'add' %}plus-circle{% else %}pencil{% endif %}"></i>
+                    {% if action == 'add' %}Tambah Anggota Baru{% else %}Edit Anggota{% endif %}
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Data Pribadi -->
+                    <h5 class="mb-3"><i class="bi bi-person"></i> Data Pribadi</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="name" class="form-label">Nama Lengkap *</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{% if member %}{{ member.name }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="gender" class="form-label">Jenis Kelamin *</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Pilih...</option>
+                                <option value="L" {% if member and member.gender == 'L' %}selected{% endif %}>Laki-laki</option>
+                                <option value="P" {% if member and member.gender == 'P' %}selected{% endif %}>Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="nis" class="form-label">NIS/NIP *</label>
+                            <input type="text" class="form-control" id="nis" name="nis" 
+                                   value="{% if member %}{{ member.nis }}{% endif %}" 
+                                   {% if action == 'edit' %}readonly{% endif %} required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="member_type" class="form-label">Tipe Anggota *</label>
+                            <select class="form-select" id="member_type" name="member_type" required>
+                                <option value="">Pilih...</option>
+                                <option value="siswa" {% if member and member.member_type == 'siswa' %}selected{% endif %}>Siswa</option>
+                                <option value="guru" {% if member and member.member_type == 'guru' %}selected{% endif %}>Guru</option>
+                                <option value="staff" {% if member and member.member_type == 'staff' %}selected{% endif %}>Staff</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="date_of_birth" class="form-label">Tanggal Lahir *</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                   value="{% if member %}{{ member.date_of_birth|date:'Y-m-d' }}{% endif %}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="class_name" class="form-label">Kelas (untuk siswa)</label>
+                        <input type="text" class="form-control" id="class_name" name="class_name" 
+                               value="{% if member %}{{ member.class_name }}{% endif %}" 
+                               placeholder="Contoh: XII IPA 1">
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Kontak -->
+                    <h5 class="mb-3"><i class="bi bi-telephone"></i> Kontak</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Telepon *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   value="{% if member %}{{ member.phone }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{% if member %}{{ member.email }}{% endif %}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Alamat *</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required>{% if member %}{{ member.address }}{% endif %}</textarea>
+                    </div>
+                    
+                    {% if action == 'edit' %}
+                    <hr class="my-4">
+                    
+                    <!-- Status -->
+                    <h5 class="mb-3"><i class="bi bi-toggle-on"></i> Status</h5>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                               {% if member.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active">
+                            Anggota Aktif
+                        </label>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Buttons -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-gradient btn-lg">
+                            <i class="bi bi-check-circle"></i> 
+                            {% if action == 'add' %}Tambah Anggota{% else %}Simpan Perubahan{% endif %}
+                        </button>
+                        <a href="{% url 'librarian:members_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

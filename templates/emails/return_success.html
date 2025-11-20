@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengembalian Berhasil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+        .book-info {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .success-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .fine-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✅ Pengembalian Berhasil!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Halo <strong>{{ member.name }}</strong>,</p>
+        
+        <div class="success-box">
+            <h2 style="color: #28a745; margin: 0;">🎉 Terima Kasih!</h2>
+            <p style="margin: 10px 0 0 0;">Buku telah berhasil dikembalikan.</p>
+        </div>
+        
+        <div class="book-info">
+            <h3>📖 Detail Pengembalian</h3>
+            
+            <div class="info-row">
+                <span class="label">Judul Buku:</span>
+                <span>{{ loan.book_copy.book.title }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Barcode:</span>
+                <span><code>{{ loan.book_copy.barcode }}</code></span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Tanggal Pinjam:</span>
+                <span>{{ loan.borrowed_date|date:"d F Y" }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Jatuh Tempo:</span>
+                <span>{{ loan.due_date|date:"d F Y" }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Tanggal Kembali:</span>
+                <span><strong>{{ loan.return_date|date:"d F Y" }}</strong></span>
+            </div>
+        </div>
+        
+        {% if loan.fine_amount > 0 %}
+        <div class="fine-box">
+            <p style="margin: 0 0 10px 0;"><strong>⚠️ Denda Keterlambatan:</strong></p>
+            <div style="font-size: 24px; font-weight: bold; color: #ff9800;">
+                Rp {{ loan.fine_amount|floatformat:0 }}
+            </div>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">
+                Terlambat {{ days_overdue }} hari (Rp 1.000/hari)
+            </p>
+            <p style="margin: 10px 0 0 0;">
+                Silakan bayar denda di perpustakaan.
+            </p>
+        </div>
+        {% else %}
+        <div class="success-box">
+            <p style="margin: 0;"><strong>✨ Tidak ada denda!</strong></p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">
+                Buku dikembalikan tepat waktu.
+            </p>
+        </div>
+        {% endif %}
+        
+        <p>Terima kasih telah menggunakan layanan perpustakaan kami dengan baik.</p>
+        
+        <p>Salam,<br>
+        <strong>Tim Perpustakaan</strong></p>
+    </div>
+    
+    <div class="footer">
+        <p>Email ini dikirim otomatis oleh sistem. Mohon tidak membalas email ini.</p>
+        <p>&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+    </div>
+</body>
+</html>

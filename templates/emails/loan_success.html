@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peminjaman Berhasil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+        .book-info {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Peminjaman Berhasil!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Halo <strong>{{ member.name }}</strong>,</p>
+        
+        <p>Peminjaman buku Anda telah berhasil diproses.</p>
+        
+        <div class="book-info">
+            <h3>📖 Detail Peminjaman</h3>
+            
+            <div class="info-row">
+                <span class="label">Judul Buku:</span>
+                <span>{{ loan.book_copy.book.title }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Penulis:</span>
+                <span>{{ loan.book_copy.book.author }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Barcode:</span>
+                <span><code>{{ loan.book_copy.barcode }}</code></span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Tanggal Pinjam:</span>
+                <span>{{ loan.borrowed_date|date:"d F Y" }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="label">Jatuh Tempo:</span>
+                <span><strong>{{ loan.due_date|date:"d F Y" }}</strong></span>
+            </div>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Perhatian:</strong>
+            <ul>
+                <li>Harap kembalikan buku sebelum tanggal <strong>{{ loan.due_date|date:"d F Y" }}</strong></li>
+                <li>Keterlambatan dikenakan denda <strong>Rp 1.000 per hari</strong></li>
+                <li>Jaga kondisi buku dengan baik</li>
+            </ul>
+        </div>
+        
+        <p>Terima kasih telah menggunakan layanan perpustakaan kami.</p>
+        
+        <p>Salam,<br>
+        <strong>Tim Perpustakaan</strong></p>
+    </div>
+    
+    <div class="footer">
+        <p>Email ini dikirim otomatis oleh sistem. Mohon tidak membalas email ini.</p>
+        <p>&copy; 2024 Perpustakaan Sekolah. All rights reserved.</p>
+    </div>
+</body>
+</html>

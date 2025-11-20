@@ -1,0 +1,125 @@
+{% extends 'librarian/base.html' %}
+
+{% block page_title %}
+    {% if action == 'add' %}Tambah Buku{% else %}Edit Buku{% endif %}
+{% endblock %}
+
+{% block librarian_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header gradient-bg text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-{% if action == 'add' %}plus-circle{% else %}pencil{% endif %}"></i>
+                    {% if action == 'add' %}Tambah Buku Baru{% else %}Edit Buku{% endif %}
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Informasi Buku -->
+                    <h5 class="mb-3"><i class="bi bi-book"></i> Informasi Buku</h5>
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Judul Buku *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{% if book %}{{ book.title }}{% endif %}" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="author" class="form-label">Penulis *</label>
+                            <input type="text" class="form-control" id="author" name="author" 
+                                   value="{% if book %}{{ book.author }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="publisher" class="form-label">Penerbit *</label>
+                            <input type="text" class="form-control" id="publisher" name="publisher" 
+                                   value="{% if book %}{{ book.publisher }}{% endif %}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="isbn" class="form-label">ISBN *</label>
+                            <input type="text" class="form-control" id="isbn" name="isbn" 
+                                   value="{% if book %}{{ book.isbn }}{% endif %}" 
+                                   {% if action == 'edit' %}readonly{% endif %} required>
+                            <small class="text-muted">13 digit</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="year_published" class="form-label">Tahun Terbit *</label>
+                            <input type="number" class="form-control" id="year_published" name="year_published" 
+                                   value="{% if book %}{{ book.year_published }}{% endif %}" 
+                                   min="1900" max="2100" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="category" class="form-label">Kategori *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">Pilih...</option>
+                                <option value="fiksi" {% if book and book.category == 'fiksi' %}selected{% endif %}>Fiksi</option>
+                                <option value="non_fiksi" {% if book and book.category == 'non_fiksi' %}selected{% endif %}>Non-Fiksi</option>
+                                <option value="referensi" {% if book and book.category == 'referensi' %}selected{% endif %}>Referensi</option>
+                                <option value="majalah" {% if book and book.category == 'majalah' %}selected{% endif %}>Majalah</option>
+                                <option value="komik" {% if book and book.category == 'komik' %}selected{% endif %}>Komik</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="4">{% if book %}{{ book.description }}{% endif %}</textarea>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Cover & Rating -->
+                    <h5 class="mb-3"><i class="bi bi-image"></i> Cover & Rating</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="cover_image" class="form-label">Cover Buku</label>
+                            <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                            {% if book and book.cover_image %}
+                            <small class="text-muted">Cover saat ini: {{ book.cover_image.name }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="rating" class="form-label">Rating (0-5)</label>
+                            <input type="number" class="form-control" id="rating" name="rating" 
+                                   value="{% if book %}{{ book.rating }}{% else %}0{% endif %}" 
+                                   min="0" max="5" step="0.1">
+                        </div>
+                    </div>
+                    
+                    {% if action == 'add' %}
+                    <hr class="my-4">
+                    
+                    <!-- Jumlah Salinan -->
+                    <h5 class="mb-3"><i class="bi bi-stack"></i> Jumlah Salinan</h5>
+                    
+                    <div class="mb-3">
+                        <label for="total_copies" class="form-label">Jumlah Salinan *</label>
+                        <input type="number" class="form-control" id="total_copies" name="total_copies" 
+                               value="1" min="1" max="100" required>
+                        <small class="text-muted">Barcode akan otomatis di-generate untuk setiap salinan</small>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Buttons -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-gradient btn-lg">
+                            <i class="bi bi-check-circle"></i> 
+                            {% if action == 'add' %}Tambah Buku{% else %}Simpan Perubahan{% endif %}
+                        </button>
+                        <a href="{% url 'librarian:books_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
