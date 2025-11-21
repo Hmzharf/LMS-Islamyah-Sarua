@@ -38,7 +38,7 @@ Sistem manajemen perpustakaan berbasis web dengan fitur email notification mengg
 
 ### 1. Clone Repository
 
-```bash
+bash
 git clone https://github.com/username/perpustakaan-sekolah.git
 cd perpustakaan-sekolah
 
@@ -82,7 +82,7 @@ Isi .env:
 
 **Isi .env:**
 
-```env
+env
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
