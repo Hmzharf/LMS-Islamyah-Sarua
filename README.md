@@ -53,7 +53,7 @@ bash
 pip install -r requirements.txt
 
 Setup Database
-bash
+````bash
 #Buat database PostgreSQL
 sudo -u postgres psql
 CREATE DATABASE namadb;
