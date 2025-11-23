@@ -34,9 +34,9 @@ Sistem manajemen perpustakaan berbasis web dengan fitur email notification mengg
 - PostgreSQL 12+
 - Redis 6+
 
-##  🚀 Instalasi
+# 🚀 Instalasi
 
-# 1. Clone Repository
+## 1. Clone Repository
 ````bash
 git clone https://github.com/username/perpustakaan-sekolah.git
 cd perpustakaan-sekolah
@@ -162,3 +162,4 @@ Pull requests are welcome!
 Email: hamzaharifianto88@gmail.com
 
 ### selesai
+# Thanks 
