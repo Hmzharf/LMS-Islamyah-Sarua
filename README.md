@@ -97,7 +97,8 @@ ADMIN_EMAIL=admin@perpustakaan.com
 Generate Secret Key
 ````bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-Copy output dan paste ke .env di bagian SECRET_KEY.
+
+## Copy output dan paste ke .env di bagian SECRET_KEY.
 
 ## Buat Dummy Data
 ````bash
